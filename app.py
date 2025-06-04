@@ -17,7 +17,11 @@ def save_reactions(data):
 
 @app.route("/")
 def index():
-    images = os.path.join("static", "images")
+    images_path = os.path.join(app.static_folder, "images")
+    try:
+        images = os.listdir(images_path)
+    except FileNotFoundError:
+        images = []
     reactions = load_reactions()
     return render_template("index.html", images=images, reactions=reactions)
 

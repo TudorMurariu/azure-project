@@ -6,7 +6,7 @@
 <body>
     {% for image in images %}
         <div>
-            <img src="{{ url_for('static', filename='images/' + image) }}" width="300">
+            <img src="{{ url_for('static', filename='images/' + image) }}" width="300" alt="{{ image }}">
             <div>
                 <button onclick="sendReaction('{{ image }}', 'like')">👍 ({{ reactions.get(image, {}).get('like', 0) }})</button>
                 <button onclick="sendReaction('{{ image }}', 'love')">❤️ ({{ reactions.get(image, {}).get('love', 0) }})</button>
