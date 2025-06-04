@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Guest Reviews</title>
+</head>
+<body>
+    <h1>Leave a Review</h1>
+    <form method="POST" enctype="multipart/form-data">
+        <textarea name="text" rows="3" cols="40" placeholder="Write your review..." required></textarea><br>
+        <input type="file" name="image" accept="image/*"><br>
+        <button type="submit">Post Review</button>
+    </form>
+
+    <hr>
+    <h2>All Reviews</h2>
+    {% for review in reviews %}
+        <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
+            <strong>{{ review.username }}</strong> ({{ review.timestamp }})<br>
+            <p>{{ review.text }}</p>
+            {% if review.image %}
+                <img src="{{ url_for('static', filename=review.image) }}" style="max-width:200px;">
+            {% endif %}
+        </div>
+    {% endfor %}
+</body>
+</html>

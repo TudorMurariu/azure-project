@@ -3,11 +3,16 @@ import os
 import json
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.secret_key = "super_secret_key"
 DATA_FILE = "reactions.json"
 DB_FILE = DB_FILE = os.path.abspath(os.path.join(os.path.dirname(__file__), "users.db"))
+UPLOAD_FOLDER = os.path.join(app.static_folder, 'reviews')
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+REVIEW_FILE = os.path.abspath(os.path.join(os.path.dirname(__file__), "reviews.json"))
 
 # ----- DB SETUP -----
 def init_db():
@@ -19,7 +24,17 @@ def init_db():
                         password TEXT NOT NULL)''')
         conn.commit()
 
-# ----- REACTION STORAGE -----
+# ----- REACTION/ REVIEW STORAGE -----
+def load_reviews():
+    if not os.path.exists(REVIEW_FILE):
+        return []
+    with open(REVIEW_FILE, "r") as f:
+        return json.load(f)
+
+def save_reviews(reviews):
+    with open(REVIEW_FILE, "w") as f:
+        json.dump(reviews, f)
+
 def load_reactions():
     if not os.path.exists(DATA_FILE):
         return {}
@@ -93,6 +108,37 @@ def login():
 def logout():
     session.pop("username", None)
     return redirect(url_for("login"))
+
+@app.route("/reviews", methods=["GET", "POST"])
+def reviews():
+    if request.method == "POST":
+        username = session.get("username", "Anonymous")
+        text = request.form.get("text", "").strip()
+        image_file = request.files.get("image")
+
+        if not text:
+            return "Text is required", 400
+
+        image_filename = ""
+        if image_file and image_file.filename:
+            image_filename = f"{datetime.utcnow().timestamp()}_{secure_filename(image_file.filename)}"
+            image_path = os.path.join(UPLOAD_FOLDER, image_filename)
+            image_file.save(image_path)
+
+        review = {
+            "username": username,
+            "text": text,
+            "image": f"reviews/{image_filename}" if image_filename else "",
+            "timestamp": datetime.utcnow().isoformat()
+        }
+
+        reviews = load_reviews()
+        reviews.insert(0, review)  # recent first
+        save_reviews(reviews)
+        return redirect(url_for("reviews"))
+
+    reviews = load_reviews()
+    return render_template("reviews.html", reviews=reviews)
 
 # ----- MAIN -----
 if __name__ == "__main__":
