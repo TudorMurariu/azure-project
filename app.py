@@ -7,7 +7,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 app = Flask(__name__)
 app.secret_key = "super_secret_key"
 DATA_FILE = "reactions.json"
-DB_FILE = "users.db"
+DB_FILE = DB_FILE = os.path.abspath(os.path.join(os.path.dirname(__file__), "users.db"))
 
 # ----- DB SETUP -----
 def init_db():
