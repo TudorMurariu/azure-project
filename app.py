@@ -17,7 +17,7 @@ def save_reactions(data):
 
 @app.route("/")
 def index():
-    images = os.listdir("static/images")
+    images = os.path.join("static", "images")
     reactions = load_reactions()
     return render_template("index.html", images=images, reactions=reactions)
 

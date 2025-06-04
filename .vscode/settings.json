@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/82b1a892-1f36-4849-b5fc-7397d6deb59d/resourceGroups/hpc-azure/providers/Microsoft.Web/sites/image-flask-app123",
+    "appService.deploySubpath": "."
+}
