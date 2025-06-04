@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Reactions</title>
+</head>
+<body>
+    {% for image in images %}
+        <div>
+            <img src="{{ url_for('static', filename='images/' + image) }}" width="300">
+            <div>
+                <button onclick="sendReaction('{{ image }}', 'like')">👍 ({{ reactions.get(image, {}).get('like', 0) }})</button>
+                <button onclick="sendReaction('{{ image }}', 'love')">❤️ ({{ reactions.get(image, {}).get('love', 0) }})</button>
+                <button onclick="sendReaction('{{ image }}', 'wow')">😮 ({{ reactions.get(image, {}).get('wow', 0) }})</button>
+            </div>
+        </div>
+    {% endfor %}
+    <script>
+        function sendReaction(image, reaction) {
+            fetch("/react", {
+                method: "POST",
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({image: image, reaction: reaction})
+            }).then(() => location.reload());
+        }
+    </script>
+</body>
+</html>
