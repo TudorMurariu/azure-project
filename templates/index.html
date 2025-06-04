@@ -4,6 +4,9 @@
     <title>Image Reactions</title>
 </head>
 <body>
+    <h2>Welcome, {{ username }}!</h2>
+    <p><a href="{{ url_for('logout') }}">Logout</a></p>
+
     {% for image in images %}
         <div>
             <img src="{{ url_for('static', filename='images/' + image) }}" width="300" alt="{{ image }}">
@@ -13,14 +16,22 @@
                 <button onclick="sendReaction('{{ image }}', 'wow')">😮 ({{ reactions.get(image, {}).get('wow', 0) }})</button>
             </div>
         </div>
+        <hr>
     {% endfor %}
+
     <script>
         function sendReaction(image, reaction) {
             fetch("/react", {
                 method: "POST",
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({image: image, reaction: reaction})
-            }).then(() => location.reload());
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ image: image, reaction: reaction })
+            }).then(response => {
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert("You must be logged in to react.");
+                }
+            });
         }
     </script>
 </body>
